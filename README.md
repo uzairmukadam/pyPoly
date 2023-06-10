@@ -22,9 +22,6 @@ A 3D software renderer for projecting obj files. The project is created in pytho
 
 All the vertices are stored in a list and the faces are stored in another list. Using transformation matrices, the vertices are moved and rotated based on the button pressed. After transformation these points are passed through the projection matix to project them to 2d plane.
 
-
-[![Super Fast Ray Casting in Tiled Worlds using DDA](http://img.youtube.com/vi/NbSee-XM7WA/0.jpg)](https://youtu.be/NbSee-XM7WA)
-
 # Class files
 
 1. main.py - This is the starting point of the project and it is responsible for importing all the other required classes and creating the pygame windows for drawing the graphics.
