@@ -16,8 +16,8 @@ class Camera:
 
         keys = pg.key.get_pressed()
 
-        movement_speed = (1 / 100) * self.engine.delta_time
-        rotation_speed = (math.pi / 1000) * self.engine.delta_time
+        movement_speed = (1 / 1000) * self.engine.delta_time
+        rotation_speed = (math.pi / 4000) * self.engine.delta_time
 
         if keys[pg.K_w]:
             dz += movement_speed

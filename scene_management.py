@@ -75,7 +75,7 @@ def vertex_translate(vertex, offset):
 
 def normal_calculation(pts, center):
     v1 = [pts[1][0] - pts[0][0], pts[1][1] - pts[0][1], pts[1][2] - pts[0][2]]
-    v2 = [pts[0][0] - pts[2][0], pts[0][1] - pts[2][1], pts[0][2] - pts[2][2]]
+    v2 = [pts[2][0] - pts[0][0], pts[2][1] - pts[0][1], pts[2][2] - pts[0][2]]
 
     res = np.cross(v1, v2, axis=0)
     temp = [vert for vert in res]

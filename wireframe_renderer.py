@@ -27,4 +27,4 @@ class WireframeRenderer:
                             ((p1[0], p1[1]), (p2[0], p2[1]), (p3[0], p3[1])), 1)
 
             # normal
-            # pg.draw.line(self.screen, "blue", center, normal, 1)
+            pg.draw.line(self.screen, "blue", center, normal, 1)
