@@ -1,7 +1,5 @@
 import math
 
-import numpy as np
-
 
 # using shoelace method
 def basic_back_face_culling(p1, p2, p3):
@@ -9,18 +7,6 @@ def basic_back_face_culling(p1, p2, p3):
             (p3[0] * p1[1]) - (p3[1] * p1[0]))
 
     return val >= 0
-
-
-def vector_angle(v1, v2):
-    v1_matrix = [[v1[0], 0, 0, 0], [0, v1[1], 0, 0], [0, 0, v1[2], 0], [0, 0, 0, 1]]
-    v2_matrix = [[v2[0], 0, 0, 0], [0, v2[1], 0, 0], [0, 0, v2[2], 0], [0, 0, 0, 1]]
-
-    x = np.dot(v1_matrix, v2_matrix)
-    l = vector_length(v1) * vector_length(v2)
-
-    ang = np.arccos(x / l)
-
-    return np.max(ang)
 
 
 def vector_length(v):
@@ -78,14 +64,17 @@ def normal_calculation(pts, center):
     v1 = [pts[1][0] - pts[0][0], pts[1][1] - pts[0][1], pts[1][2] - pts[0][2]]
     v2 = [pts[2][0] - pts[0][0], pts[2][1] - pts[0][1], pts[2][2] - pts[0][2]]
 
-    res = np.cross(v1, v2, axis=0)
-    temp = [vert for vert in res]
-    length = vector_length(temp)
-    temp[0] /= length
-    temp[1] /= length
-    temp[2] /= length
+    res = [(v1[1] * v2[2] - v1[2] * v2[1]),
+           (v1[2] * v2[0] - v1[0] * v2[2]),
+           (v1[0] * v2[1] - v1[1] * v2[0]),
+           1]
 
-    return vertex_translate(temp, center)
+    length = vector_length(res)
+    res[0] /= length
+    res[1] /= length
+    res[2] /= length
+
+    return vertex_translate(res, center)
 
 
 class SceneManagement:
