@@ -11,11 +11,6 @@ def basic_back_face_culling(p1, p2, p3):
     return val >= 0
 
 
-def np_to_tuple(array):
-    temp = [vert[0] for vert in array]
-    return tuple(temp[:-1])
-
-
 def vector_angle(v1, v2):
     v1_matrix = [[v1[0], 0, 0, 0], [0, v1[1], 0, 0], [0, 0, v1[2], 0], [0, 0, 0, 1]]
     v2_matrix = [[v2[0], 0, 0, 0], [0, v2[1], 0, 0], [0, 0, v2[2], 0], [0, 0, 0, 1]]
@@ -36,41 +31,47 @@ def vertex_rotate_x(vertex, angle):
     cos = math.cos(angle)
     sin = math.sin(angle)
 
-    vertex_matrix = [[vertex[0]], [vertex[1]], [vertex[2]], [1]]
-    rotation_matrix = [[1, 0, 0, 0], [0, cos, -sin, 0], [0, sin, cos, 0], [0, 0, 0, 1]]
+    # rotation_matrix = [[1, 0, 0, 0], [0, cos, -sin, 0], [0, sin, cos, 0], [0, 0, 0, 1]]
 
-    res = np.dot(rotation_matrix, vertex_matrix)
-    return np_to_tuple(res)
+    res = [(vertex[0]),
+           (vertex[1] * cos - vertex[2] * sin),
+           (vertex[1] * sin + vertex[2] * cos),
+           1]
+
+    return res
 
 
 def vertex_rotate_y(vertex, angle):
     cos = math.cos(angle)
     sin = math.sin(angle)
 
-    vertex_matrix = [[vertex[0]], [vertex[1]], [vertex[2]], [1]]
-    rotation_matrix = [[cos, 0, sin, 0], [0, 1, 0, 0], [-sin, 0, cos, 0], [0, 0, 0, 1]]
+    # rotation_matrix = [[cos, 0, sin, 0], [0, 1, 0, 0], [-sin, 0, cos, 0], [0, 0, 0, 1]]
 
-    res = np.dot(rotation_matrix, vertex_matrix)
-    return np_to_tuple(res)
+    res = [(vertex[0] * cos + vertex[2] * sin),
+           (vertex[1]),
+           (-(vertex[0] * sin) + vertex[2] * cos),
+           1]
+
+    return res
 
 
 def vertex_rotate_z(vertex, angle):
     cos = math.cos(angle)
     sin = math.sin(angle)
 
-    vertex_matrix = [[vertex[0]], [vertex[1]], [vertex[2]], [1]]
-    rotation_matrix = [[cos, -sin, 0, 0], [sin, cos, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+    # rotation_matrix = [[cos, -sin, 0, 0], [sin, cos, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
 
-    res = np.dot(rotation_matrix, vertex_matrix)
-    return np_to_tuple(res)
+    res = [(vertex[0] * cos - vertex[1] * sin),
+           (vertex[0] * sin + vertex[1] * cos),
+           (vertex[2]),
+           1]
+
+    return res
 
 
 def vertex_translate(vertex, offset):
-    vertex_matrix = [[vertex[0]], [vertex[1]], [vertex[2]], [1]]
-    translation_matrix = [[1, 0, 0, offset[0]], [0, 1, 0, offset[1]], [0, 0, 1, offset[2]], [0, 0, 0, 1]]
-
-    res = np.dot(translation_matrix, vertex_matrix)
-    return np_to_tuple(res)
+    res = (vertex[0] + offset[0], vertex[1] + offset[1], vertex[2] + offset[2], 1)
+    return res
 
 
 def normal_calculation(pts, center):
@@ -103,12 +104,8 @@ class SceneManagement:
 
         projection_factor = screen_distance / (vertex[2] + 0.0001)
 
-        vertex_vector = [[vertex[0]], [vertex[1]], [vertex[2]]]
-        projection_matrix = [[projection_factor, 0, 0], [0, projection_factor, 0], [0, 0, 1]]
+        temp = [vertex[0] * projection_factor, vertex[1] * projection_factor, 1]
 
-        res = np.dot(projection_matrix, vertex_vector)
-
-        temp = [vert[0] for vert in res]
         temp[0] += width / 2
         temp[1] = (height / 2) - temp[1]
 
