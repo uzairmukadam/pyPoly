@@ -1,3 +1,5 @@
+import math
+
 import pygame as pg
 
 
@@ -16,15 +18,30 @@ class WireframeRenderer:
     def draw(self):
         for face in self.faces:
             pts = face['f']
-            center = face['c'][:-1]
-            normal = face['n'][:-1]
+            center = face['c']
+            normal = face['n']
+            light_vector = face['lv']
+            light_angle = face['li']
 
             p1 = self.vertices[pts[0]]
             p2 = self.vertices[pts[1]]
             p3 = self.vertices[pts[2]]
 
-            pg.draw.polygon(self.screen, "white",
-                            ((p1[0], p1[1]), (p2[0], p2[1]), (p3[0], p3[1])), 1)
+            if light_angle > 0:
+                color = (255 * abs(light_angle), 255 * abs(light_angle), 255 * abs(light_angle))
+            else:
+                color = "black"
+
+            pg.draw.polygon(self.screen, color,
+                            ((p1[0], p1[1]), (p2[0], p2[1]), (p3[0], p3[1])))
+
+            # pg.draw.polygon(self.screen, "black",
+            #                ((p1[0], p1[1]), (p2[0], p2[1]), (p3[0], p3[1])), 1)
+
+            # pg.draw.circle(self.screen, "red", center, 1)
 
             # normal
-            pg.draw.line(self.screen, "blue", center, normal, 1)
+            # pg.draw.line(self.screen, "blue", center, normal, 1)
+
+            # light
+            # pg.draw.line(self.screen, "yellow", center, light_vector, 1)
