@@ -1,6 +1,7 @@
 import math
 
 import transformation
+from polygon_depth_tree import *
 
 
 def vector_angle(v1, v2, c):
@@ -33,8 +34,7 @@ class SceneManagement:
         self.light_vector = (0, 0, -1)
 
         self.vertices = []
-        self.faces = []
-        self.normal = []
+        self.faces = None
 
     def projection_vertex(self, vertex):
         width = self.engine.settings.width
@@ -57,7 +57,7 @@ class SceneManagement:
         view_offset = -camera_pos[0], camera_pos[1] - 0.5, -camera_pos[2] + 5
 
         self.vertices = []
-        self.faces = []
+        self.faces = PolygonDepthTree()
 
         obj = self.engine.model.obj
 
@@ -82,6 +82,8 @@ class SceneManagement:
             camera_angle = math.acos(
                 vector_angle(transformation.vertex_translate(normal, view_offset), (0, 0, 0),
                              transformation.vertex_translate(center, view_offset)))
+
+            depth = center[2]
 
             # translate normal and check with camera vector
             is_visible = math.pi / 2 >= camera_angle >= 0
@@ -116,5 +118,6 @@ class SceneManagement:
                 center = self.projection_vertex(transformation.vertex_translate(center, view_offset))
                 normal = self.projection_vertex(transformation.vertex_translate(normal, view_offset))
 
-                self.faces.append(
-                    {'f': tuple(triangle), 'c': center, 'n': normal, 'li': light_angle})
+                data = {'f': tuple(triangle), 'c': center, 'n': normal, 'li': light_angle}
+
+                self.faces.add_polygon(data, depth)

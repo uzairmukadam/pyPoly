@@ -9,9 +9,19 @@ class WireframeRenderer:
         self.vertices = []
         self.faces = []
 
+    def get_faces(self, node):
+        faces = []
+
+        if node:
+            faces = self.get_faces(node.right)
+            faces.append(node.face)
+            faces += self.get_faces(node.left)
+
+        return faces
+
     def update(self):
         self.vertices = self.engine.scene_management.vertices
-        self.faces = self.engine.scene_management.faces
+        self.faces = self.get_faces(self.engine.scene_management.faces.root)
 
     def draw(self):
         for face in self.faces:
