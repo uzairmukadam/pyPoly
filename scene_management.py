@@ -1,5 +1,3 @@
-import math
-
 import transformation
 from polygon_depth_tree import *
 
@@ -51,21 +49,20 @@ class SceneManagement:
         return tuple(temp)
 
     def update(self):
-        camera_pos = self.engine.camera.pos_x, self.engine.camera.pos_y, self.engine.camera.pos_z
-        obj_rot = self.engine.camera.angle_x, self.engine.camera.angle_y, self.engine.camera.angle_z
-
-        view_offset = -camera_pos[0], camera_pos[1] - 0.5, -camera_pos[2] + 5
-
         self.vertices = []
         self.faces = PolygonDepthTree()
 
+        camera_pos = self.engine.camera.pos_x, self.engine.camera.pos_y, self.engine.camera.pos_z
+        obj_rot = self.engine.camera.angle_x, self.engine.camera.angle_y, self.engine.camera.angle_z
+        view_offset = -camera_pos[0], camera_pos[1] - 0.5, -camera_pos[2] + 5
+
         obj = self.engine.model.obj
 
-        for face in obj['f']:
-            face_index = obj['f'].index(face)
+        for index in range(len(obj['f'])):
+            face = obj['f'][index]
             vertices = (obj['v'][face[0]], obj['v'][face[1]], obj['v'][face[2]])
-            center = obj['c'][face_index]
-            normal = obj['vn'][face_index]
+            center = obj['c'][index]
+            normal = obj['vn'][index]
 
             if obj_rot[0] != 0:
                 center = transformation.vertex_rotate_x(center, obj_rot[0])
@@ -79,16 +76,13 @@ class SceneManagement:
                 center = transformation.vertex_rotate_z(center, obj_rot[2])
                 normal = transformation.vertex_rotate_z(normal, obj_rot[2])
 
-            camera_angle = math.acos(
-                vector_angle(transformation.vertex_translate(normal, view_offset), (0, 0, 0),
-                             transformation.vertex_translate(center, view_offset)))
-
             depth = center[2]
+            max_z = None
 
-            # translate normal and check with camera vector
-            is_visible = math.pi / 2 >= camera_angle >= 0
+            camera_normal_angle = vector_angle(transformation.vertex_translate(normal, view_offset), (0, 0, 0),
+                                               transformation.vertex_translate(center, view_offset))
 
-            if is_visible:
+            if 1 >= camera_normal_angle >= 0:
                 triangle = []
                 for i in range(3):
                     vertex = vertices[i]
@@ -104,6 +98,11 @@ class SceneManagement:
 
                     vertex = transformation.vertex_translate(vertex, view_offset)
 
+                    if max_z is None:
+                        max_z = vertex[2]
+                    elif vertex[2] > max_z:
+                        max_z = vertex[2]
+
                     vertex = self.projection_vertex(vertex)
 
                     if vertex not in self.vertices:
@@ -111,13 +110,14 @@ class SceneManagement:
 
                     triangle.append(self.vertices.index(vertex))
 
-                light_angle = light_vector_angle(transformation.vertex_translate(normal, view_offset),
-                                                 self.light_vector,
-                                                 transformation.vertex_translate(center, view_offset))
+                if max_z > self.engine.settings.z_near:
+                    light_angle = light_vector_angle(transformation.vertex_translate(normal, view_offset),
+                                                     self.light_vector,
+                                                     transformation.vertex_translate(center, view_offset))
 
-                center = self.projection_vertex(transformation.vertex_translate(center, view_offset))
-                normal = self.projection_vertex(transformation.vertex_translate(normal, view_offset))
+                    center = self.projection_vertex(transformation.vertex_translate(center, view_offset))
+                    normal = self.projection_vertex(transformation.vertex_translate(normal, view_offset))
 
-                data = {'f': tuple(triangle), 'c': center, 'n': normal, 'li': light_angle}
+                    data = {'f': tuple(triangle), 'c': center, 'n': normal, 'li': light_angle}
 
-                self.faces.add_polygon(data, depth)
+                    self.faces.add_polygon(data, depth)

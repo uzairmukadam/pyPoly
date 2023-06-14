@@ -22,8 +22,9 @@ class Settings:
 
         # camera parameters
         self.fov = math.pi / 3
-        self.screen_distance = (self.width // 2) / (math.tan(self.fov / 2) + 0.0001)
+        self.screen_distance = (self.width / 2) / (math.tan(self.fov / 2) + 0.0001)
         self.vertical_fov = 2 * (math.atan(self.height / (2 * self.screen_distance)))
+        self.z_near = 0.2
 
         # graphics parameters
         self.draw_distance = 30

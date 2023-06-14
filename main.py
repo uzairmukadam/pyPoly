@@ -42,7 +42,7 @@ class Main:
         self.renderer.update()
 
     def draw(self):
-        self.screen.fill((40, 60, 80))
+        self.screen.fill((0, 181, 226))
 
         self.renderer.draw()
 
